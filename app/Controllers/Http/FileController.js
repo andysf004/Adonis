@@ -5,6 +5,12 @@ const Helpers = use('Helpers')
  * Resourceful controller for interacting with files
  */
 class FileController {
+  async show ({ params, response }) {
+    const file = await File.findOrFail(params.id)
+
+    return response.download(Helpers.tmpPath(`uploads/${file.file}`))
+  }
+
   /**
    * Create/save a new file.
    * POST files
@@ -35,7 +41,9 @@ class FileController {
 
       return file
     } catch (err) {
-
+      return response
+        .status(err.status)
+        .send({ error: { message: 'Erro no upload de arquivo' } })
     }
   }
 }
